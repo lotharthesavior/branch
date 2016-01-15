@@ -1,6 +1,7 @@
 <?php
 
 namespace Coyl\Git;
+
 use Coyl\Git\Exception\BranchNotFoundException;
 
 /**
@@ -39,13 +40,13 @@ class GitRepo
     public static function create($repoPath, $source = null, $remoteSource = false, $reference = null, $commandString = "")
     {
         if (is_dir($repoPath) && file_exists($repoPath . "/.git") && is_dir($repoPath . "/.git")) {
-            throw new \Exception('"' . $repoPath . '" is already a git repository');
+            throw new GitException(sprintf('"%s" is already a git repository', $repoPath));
         } else {
             $repo = new self($repoPath, true, false);
             if (is_string($source)) {
                 if ($remoteSource) {
                     if (!is_dir($reference) || !is_dir($reference . '/.git')) {
-                        throw new \Exception('"' . $reference . '" is not a git repository. Cannot use as reference.');
+                        throw new GitException('"' . $reference . '" is not a git repository. Cannot use as reference.');
                     } else if (strlen($reference)) {
                         $reference = realpath($reference);
                         $reference = "--reference $reference";
@@ -124,11 +125,11 @@ class GitRepo
                                 $this->run('create');
                             }
                         } else {
-                            throw new \Exception('"' . $repo_path . '" is not a git repository');
+                            throw new GitException(sprintf('"%s" is not a git repository', $repo_path));
                         }
                     }
                 } else {
-                    throw new \Exception('"' . $repo_path . '" is not a directory');
+                    throw new GitException(sprintf('"%s" is not a directory', $repo_path));
                 }
             } else {
                 if ($create_new) {
@@ -137,10 +138,10 @@ class GitRepo
                         $this->repoPath = $repo_path;
                         if ($_init) $this->run('create');
                     } else {
-                        throw new \Exception('cannot create repository in non-existent directory');
+                        throw new GitException('cannot create repository in non-existent directory');
                     }
                 } else {
-                    throw new \Exception('"' . $repo_path . '" does not exist');
+                    throw new GitException(sprintf('"%s" does not exist', $repo_path));
                 }
             }
         }
@@ -205,9 +206,11 @@ class GitRepo
      * @param  string $command command to run
      * @return string
      */
-    public function run($command)
+    public function run($command, array $parameters = null)
     {
-        return $this->console->runCommand(Git::getBin() . " " . $command);
+        if (is_null($parameters))
+            $parameters = [];
+        return $this->console->runCommand(vprintf(Git::getBin() . " " . $command, $parameters));
     }
 
     /**
@@ -243,7 +246,7 @@ class GitRepo
         if (is_array($files)) {
             $files = '"' . implode('" "', $files) . '"';
         }
-        return $this->run("add $files -v");
+        return $this->run("add %s -v", [$files]);
     }
 
     /**
@@ -261,7 +264,7 @@ class GitRepo
         if (is_array($files)) {
             $files = '"' . implode('" "', $files) . '"';
         }
-        return $this->run("rm " . ($cached ? '--cached ' : '') . $files);
+        return $this->run("rm %s %s", [($cached ? '--cached ' : ''), $files]);
     }
 
     /**
@@ -277,7 +280,7 @@ class GitRepo
     public function commit($message = "", $commit_all = true)
     {
         $flags = $commit_all ? '-av' : '-v';
-        return $this->run("commit " . $flags . " -m " . escapeshellarg($message));
+        return $this->run("commit %s -m %s", [$flags, escapeshellarg($message)]);
     }
 
     /**
@@ -293,7 +296,7 @@ class GitRepo
      */
     public function cloneTo($target)
     {
-        return $this->run("clone --local " . $this->repoPath . " $target");
+        return $this->run("clone --local %s %s", [$this->repoPath, $target]);
     }
 
     /**
@@ -307,9 +310,9 @@ class GitRepo
      * @return string
      * @todo move to common purpose clone command
      */
-    public function cloneFrom($source, $command_string = "")
+    public function cloneFrom($source, $commandString = "")
     {
-        return $this->run("clone --local $source " . $this->repoPath . " " . $command_string);
+        return $this->run("clone --local %s %s %s", [$source, $this->repoPath, $commandString]);
     }
 
     /**
@@ -326,7 +329,7 @@ class GitRepo
      */
     public function cloneRemote($source, $reference)
     {
-        return $this->run("clone $reference $source " . $this->repoPath);
+        return $this->run("clone %s %s %s", [$reference, $source, $this->repoPath]);
     }
 
     /**
@@ -341,7 +344,7 @@ class GitRepo
      */
     public function clean($dirs = false, $force = false)
     {
-        return $this->run("clean" . (($force) ? " -f" : "") . (($dirs) ? " -d" : ""));
+        return $this->run("clean %s %s", [(($force) ? " -f" : ""), (($dirs) ? " -d" : "")]);
     }
 
     /**
@@ -370,7 +373,7 @@ class GitRepo
      */
     public function branchDelete($branch, $force = false)
     {
-        return $this->run("branch " . (($force) ? '-D' : '-d') . " $branch");
+        return $this->run("branch %s %s", [(($force) ? '-D' : '-d'), $branch]);
     }
 
     /**
@@ -429,7 +432,7 @@ class GitRepo
     public function getActiveBranch($keep_asterisk = false)
     {
         $branchArray = $this->branches(true);
-        $active_branch = preg_grep("/^\*/", $branchArray);
+        $active_branch = preg_grep("/^\\*/", $branchArray);
         reset($active_branch);
         if ($keep_asterisk) {
             return current($active_branch);
@@ -451,9 +454,9 @@ class GitRepo
     public function checkout($branch)
     {
         try {
-            return $this->run("checkout $branch");
-        } catch (\Exception $e) {
-            throw new BranchNotFoundException("Branch " . $branch . " not found", 0, $e);
+            return $this->run("checkout %s", [$branch]);
+        } catch (ConsoleException $e) {
+            throw new BranchNotFoundException(sprintf('Branch %s not found', $branch), 0, $e);
         }
     }
 
@@ -470,7 +473,7 @@ class GitRepo
     public function merge($branch)
     {
         $branch = escapeshellarg($branch);
-        return $this->run("merge $branch --no-ff");
+        return $this->run("merge %s --no-ff", [$branch]);
     }
 
     /**
@@ -495,7 +498,7 @@ class GitRepo
      */
     public function reset($resetStr)
     {
-        return $this->run("reset {$resetStr}");
+        return $this->run("reset %s", [$resetStr]);
     }
 
     /**
@@ -509,7 +512,7 @@ class GitRepo
     public function fetch($dry = false)
     {
         $dry = $dry ? ' --dry-run' : '';
-        return $this->run("fetch{$dry}");
+        return $this->run("fetch%s", [$dry]);
     }
 
     /**
@@ -548,7 +551,7 @@ class GitRepo
         if ($message === null) {
             $message = $tag;
         }
-        return $this->run("tag -a $tag -m " . escapeshellarg($message));
+        return $this->run("tag -a %s -m %s", [$tag, escapeshellarg($message)]);
     }
 
     /**
@@ -562,7 +565,7 @@ class GitRepo
      */
     public function tags($pattern = null)
     {
-        $tagArray = explode("\n", $this->run("tag -l $pattern"));
+        $tagArray = explode("\n", $this->run("tag -l %s", [$pattern]));
         foreach ($tagArray as $i => &$tag) {
             $tag = trim($tag);
             if ($tag == '') {
@@ -580,11 +583,12 @@ class GitRepo
      *
      * @param string $remote
      * @param string $branch
+     * @param bool $force
      * @return string
      */
-    public function push($remote, $branch)
+    public function push($remote, $branch, $force = false)
     {
-        return $this->run("push --tags $remote $branch");
+        return $this->run("push --tags %s %s %s", [$force ? '--force' : '', $remote, $branch]);
     }
 
     /**
@@ -598,7 +602,7 @@ class GitRepo
      */
     public function pull($remote, $branch)
     {
-        return $this->run("pull $remote $branch");
+        return $this->run("pull %s %s", [$remote, $branch]);
     }
 
     /**
@@ -618,9 +622,9 @@ class GitRepo
         }
 
         if ($format === null) {
-            return $this->run("log {$limitArg} {$file}");
+            return $this->run("log %s %s", [$limitArg, $file]);
         } else {
-            return $this->run("log {$limitArg} --pretty=format:'{$format}' {$file}");
+            return $this->run("log %s --pretty=format:'%s' %s", [$limitArg, $format, $file]);
         }
     }
 
@@ -634,9 +638,9 @@ class GitRepo
     public function logGrep($grep, $format = null)
     {
         if ($format === null) {
-            return $this->run("log --grep='{$grep}'");
+            return $this->run("log --grep='%s'", [$grep]);
         } else {
-            return $this->run("log --grep='{$grep}' --pretty=format:'{$format}'");
+            return $this->run("log --grep='%s' --pretty=format:'%s'", [$grep, $format]);
         }
     }
 
@@ -649,7 +653,7 @@ class GitRepo
      */
     public function diff($params = '')
     {
-        return $this->run("diff {$params}");
+        return $this->run("diff %s", [$params]);
     }
 
     /**
@@ -716,7 +720,7 @@ class GitRepo
     public function getRemoteBranchesByPattern($pattern)
     {
         try {
-            return $this->run("branch -r | grep '{$pattern}'");
+            return $this->run("branch -r | grep '%s'", [$pattern]);
         } catch (\Exception $ex) {
             /**  @todo handle exceptions right */
             return '';
@@ -749,7 +753,7 @@ class GitRepo
      */
     public function deleteRemoteBranches(array $branches)
     {
-        $this->run("push origin --delete " . implode(" ", $branches));
+        $this->run("push origin --delete %s", [implode(" ", $branches)]);
     }
 
     /**
@@ -763,7 +767,7 @@ class GitRepo
     public function gc($command = '')
     {
         try {
-            $this->run("gc {$command}");
+            $this->run("gc %s", [$command]);
             return true;
         } catch (\Exception $ex) {
             /**  @todo handle exceptions right */
@@ -793,9 +797,9 @@ class GitRepo
     public function logFileRevisionRange($startHash, $endHash, $format = null, $file = '')
     {
         if ($format === null) {
-            return $this->run("log {$startHash}..{$endHash} {$file}");
+            return $this->run("log %s..%s %s", [$startHash, $endHash, $file]);
         } else {
-            return $this->run("log {$startHash}..{$endHash} --pretty=format:'{$format}' {$file}");
+            return $this->run("log %s..%s --pretty=format:'%s' %s", [$startHash, $endHash, $format, $file]);
         }
     }
 }

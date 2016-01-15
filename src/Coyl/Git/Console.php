@@ -4,10 +4,22 @@
 namespace Coyl\Git;
 
 
+/**
+ * Colsole commands handler
+ * @author Vasil "coylOne" Kulakov <iam@vasiliy.pro>
+ * @package Coyl\Git
+ */
 class Console
 {
+    /**
+     * Environment options
+     * @var array
+     */
     protected $envopts = [];
 
+    /**
+     * @var string
+     */
     protected $currentPath = '';
 
     /**
@@ -51,12 +63,13 @@ class Console
      */
     public function runCommand($command)
     {
-        $descriptorspec = array(
+        $descriptorSpec = array(
             1 => array('pipe', 'w'),
             2 => array('pipe', 'w'),
         );
         $pipes = array();
-        /* Depending on the value of variables_order, $_ENV may be empty.
+        /**
+         * Depending on the value of variables_order, $_ENV may be empty.
          * In that case, we have to explicitly set the new variables with
          * putenv, and call proc_open with env=null to inherit the reset
          * of the system.
@@ -75,7 +88,7 @@ class Console
             $env = array_merge($_ENV, $this->envopts);
         }
         $cwd = $this->currentPath;
-        $resource = proc_open($command, $descriptorspec, $pipes, $cwd, $env);
+        $resource = proc_open($command, $descriptorSpec, $pipes, $cwd, $env);
 
         $stdout = stream_get_contents($pipes[1]);
         $stderr = stream_get_contents($pipes[2]);
@@ -84,7 +97,7 @@ class Console
         }
 
         $status = trim(proc_close($resource));
-        if ($status) throw new \Exception($stderr . PHP_EOL . $stdout);
+        if ($status) throw new ConsoleException($stderr . PHP_EOL . $stdout);
 
         return $stderr . $stdout;
     }

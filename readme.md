@@ -1,6 +1,6 @@
 # Git.php
 
-<a href='https://pledgie.com/campaigns/28604'><img alt='Click here to lend your support to: Git.php and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/28604.png?skin_name=chrome' border='0' ></a>
+A PHP git library based on kbjr/Git.php
 
 ## Description
 
