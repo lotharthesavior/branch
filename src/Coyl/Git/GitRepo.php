@@ -210,7 +210,7 @@ class GitRepo
     {
         if (is_null($parameters))
             $parameters = [];
-        return $this->console->runCommand(vprintf(Git::getBin() . " " . $command, $parameters));
+        return $this->console->runCommand(vsprintf(Git::getBin() . " " . $command, $parameters));
     }
 
     /**
