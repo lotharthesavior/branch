@@ -210,7 +210,7 @@ class GitRepo
     {
         if (is_null($parameters))
             $parameters = [];
-        return $this->console->runCommand(vprintf(Git::getBin() . " " . $command, $parameters));
+        return $this->console->runCommand(vsprintf(Git::getBin() . " " . $command, $parameters));
     }
 
     /**
@@ -468,12 +468,16 @@ class GitRepo
      *
      * @access  public
      * @param   string $branch branch name
+     * @param   string $message commit message (optional)
      * @return  string
      */
-    public function merge($branch)
+    public function merge($branch, $message = null)
     {
         $branch = escapeshellarg($branch);
-        return $this->run("merge %s --no-ff", [$branch]);
+        if (null !== $message) {
+            $message = sprintf('-m "%s"', trim($message));
+        }
+        return $this->run("merge %s --no-ff %s", [$branch, $message]);
     }
 
     /**
