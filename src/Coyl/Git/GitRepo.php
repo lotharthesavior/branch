@@ -380,9 +380,10 @@ class GitRepo
      * Returns array of branch names
      *
      * @access public
-     * @param  bool $keepAsterisk keep asterisk mark on active branch
+     * @param string $mode
+     * @param  bool  $keepAsterisk keep asterisk mark on active branch
      * @return array
-     * @todo add decorators
+     * @todo   add decorators
      */
     public function branches($mode = GitRepo::BRANCH_LIST_MODE_LOCAL, $keepAsterisk = false)
     {
@@ -431,7 +432,7 @@ class GitRepo
      */
     public function getActiveBranch($keep_asterisk = false)
     {
-        $branchArray = $this->branches(true);
+        $branchArray = $this->branches(GitRepo::BRANCH_LIST_MODE_LOCAL, true);
         $active_branch = preg_grep("/^\\*/", $branchArray);
         reset($active_branch);
         if ($keep_asterisk) {
