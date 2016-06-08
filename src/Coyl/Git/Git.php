@@ -20,6 +20,7 @@ namespace Coyl\Git;
  */
 class Git {
 
+	const ZERO_REVISION = '0000000000000000000000000000000000000000';
 	/**
 	 * Git executable location
 	 *

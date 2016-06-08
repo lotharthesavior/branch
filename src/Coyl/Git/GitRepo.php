@@ -18,6 +18,7 @@ class GitRepo
     const BRANCH_LIST_MODE_LOCAL = 'local';
     const BRANCH_LIST_MODE_REMOTE = 'remote';
     const BRANCH_LIST_MODE_All = 'all';
+    const CONFLICT_FILE_MARK = '/CONFLICT.*?([\w\/\.]*)$/';
 
     protected $repoPath = null;
     protected $bare = false;
@@ -618,7 +619,7 @@ class GitRepo
      * @param string|null $limit
      * @return string
      */
-    public function log($format = null, $file = '', $limit = null)
+    public function logFormatted($format = null, $file = '', $limit = null)
     {
         if ($limit === null) {
             $limitArg = "";
@@ -650,6 +651,16 @@ class GitRepo
     }
 
     /**
+     * @param string $params
+     *
+     * @return string
+     */
+    public function log($params = '')
+    {
+        return $this->run('log %s', [$params]);
+    }
+
+    /**
      * Runs a `git diff`
      *
      * @param  string $params
@@ -659,6 +670,11 @@ class GitRepo
     public function diff($params = '')
     {
         return $this->run("diff %s", [$params]);
+    }
+
+    public function show($params = '')
+    {
+        return $this->run("show %s", [$params]);
     }
 
     /**
