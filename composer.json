@@ -1,7 +1,7 @@
 {
     "name": "lotharthesavior/git",
     "description": "PHP library for manipulations on git repository. Based on coyl/Git.php and it's forks",
-
+    "license": "MIT",
     "keywords": [
         "git",
         "php-git",
