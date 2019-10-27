@@ -1,4 +1,5 @@
 <?php
+
 namespace Coyl\Git\Exception;
 
 use Coyl\Git\GitException;

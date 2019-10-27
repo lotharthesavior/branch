@@ -1,12 +1,13 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 
-class ConsoleTest extends PHPUnit_Framework_TestCase
+class ConsoleTest extends TestCase
 {
     public function testCurrentPath()
     {
         $console = new \Coyl\Git\Console();
-        $console->setCurrentPath(__DIR__);
-        self::assertEquals(__DIR__, $console->runCommand('pwd'));
+        $console->setCurrentPath( __DIR__ );
+        self::assertEquals( __DIR__, trim( $console->runCommand( 'pwd' ) ) );
     }
 }

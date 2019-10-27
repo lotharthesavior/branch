@@ -1,8 +1,8 @@
 <?php
 
-
 namespace Coyl\Git;
 
+use Exception;
 
 /**
  * Colsole commands handler
@@ -13,18 +13,15 @@ class Console
 {
     /**
      * Environment options
+     *
      * @var array
      */
     protected $envopts = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $currentPath = '';
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function getCurrentPath()
     {
         return $this->currentPath;
@@ -32,9 +29,10 @@ class Console
 
     /**
      * @param string $currentPath
+     *
      * @return self
      */
-    public function setCurrentPath($currentPath)
+    public function setCurrentPath(string $currentPath): Console
     {
         $this->currentPath = $currentPath;
         return $this;
@@ -46,7 +44,7 @@ class Console
      * @param string $key key
      * @param string $value value
      */
-    public function setenv($key, $value)
+    public function setenv(string $key, string $value)
     {
         $this->envopts[$key] = $value;
     }
@@ -57,17 +55,21 @@ class Console
      * Accepts a shell command to run
      *
      * @access protected
-     * @param  string $command command to run
-     * @throws \Exception
+     *
+     * @param string $command command to run
+     *
      * @return string
+     *
+     * @throws Exception
      */
-    public function runCommand($command)
+    public function runCommand(string $command): string
     {
         $descriptorSpec = array(
             1 => array('pipe', 'w'),
             2 => array('pipe', 'w'),
         );
         $pipes = array();
+
         /**
          * Depending on the value of variables_order, $_ENV may be empty.
          * In that case, we have to explicitly set the new variables with

@@ -11,6 +11,8 @@
 
 namespace Coyl\Git;
 
+use Exception;
+
 /**
  * Git repo factory class
  * This class enables the creating, reading, and manipulation
@@ -18,93 +20,118 @@ namespace Coyl\Git;
  * @package Coyl\Git
  * @class  Git
  */
-class Git {
+class Git
+{
 
-	const ZERO_REVISION = '0000000000000000000000000000000000000000';
-	/**
-	 * Git executable location
-	 *
-	 * @var string
-	 */
-	protected static $bin = '/usr/bin/git';
+    const ZERO_REVISION = '0000000000000000000000000000000000000000';
 
-	/**
-	 * Sets git executable path
-	 *
-	 * @param string $path executable location
-	 */
-	public static function setBin($path) {
-		self::$bin = $path;
-	}
+    /**
+     * Git executable location
+     *
+     * @var string
+     */
+    protected static $bin = '/usr/bin/git';
 
-	/**
-	 * Gets git executable path
-	 */
-	public static function getBin() {
-		return self::$bin;
-	}
+    /**
+     * Sets git executable path
+     *
+     * @param string $path executable location
+     */
+    public static function setBin( string $path )
+    {
+        self::$bin = $path;
+    }
 
-	/**
-	 * Sets up library for use in a default Windows environment
-	 */
-	public static function windowsMode() {
-		self::setBin('git');
-	}
+    /**
+     * Gets git executable path
+     *
+     * @return string
+     */
+    public static function getBin(): string
+    {
+        return self::$bin;
+    }
 
-	/**
-	 * Create a new git repository
-	 *
-	 * Accepts a creation path, and, optionally, a source path
-	 *
-	 * @access  public
-	 * @param   string $repoPath repository path
-	 * @param   string $source directory to source
-	 * @return  GitRepo
-	 */
-	public static function create($repoPath, $source = null) {
-		return GitRepo::create($repoPath, $source);
-	}
+    /**
+     * Sets up library for use in a default Windows environment
+     */
+    public static function windowsMode()
+    {
+        self::setBin( 'git' );
+    }
 
-	/**
-	 * Open an existing git repository
-	 *
-	 * Accepts a repository path
-	 *
-	 * @access  public
-	 * @param   string $repoPath repository path
-	 * @return  GitRepo
-	 */
-	public static function open($repoPath) {
-		return new GitRepo($repoPath);
-	}
+    /**
+     * Create a new git repository
+     *
+     * Accepts a creation path, and, optionally, a source path
+     *
+     * @access  public
+     *
+     * @param string $repoPath repository path
+     * @param string $source directory to source
+     *
+     * @return  GitRepo
+     *
+     * @throws Exception
+     */
+    public static function create( $repoPath, $source = null )
+    {
+        return GitRepo::create( $repoPath, $source );
+    }
 
-	/**
-	 * Clones a remote repo into a directory and then returns a GitRepo object
-	 * for the newly created local repo
-	 *
-	 * Accepts a creation path and a remote to clone from
-	 *
-	 * @access  public
-	 * @param   string $repoPath repository path
-	 * @param   string $remote remote source
-	 * @param   string $reference reference path
-	 * @return  GitRepo
-	 **/
-	public static function cloneRemote($repoPath, $remote, $reference = null) {
-		return GitRepo::create($repoPath, $remote, true, $reference);
-	}
+    /**
+     * Open an existing git repository
+     *
+     * Accepts a repository path
+     *
+     * @access  public
+     *
+     * @param string $repoPath repository path
+     *
+     * @return GitRepo
+     *
+     * @throws Exception
+     */
+    public static function open( string $repoPath ): GitRepo
+    {
+        return new GitRepo( $repoPath );
+    }
 
-	/**
-	 * Checks if a variable is an instance of GitRepo
-	 *
-	 * Accepts a variable
-	 *
-	 * @access  public
-	 * @param   mixed $var variable
-	 * @return  bool
-	 */
-	public static function isRepo($var) {
-		return $var instanceof GitRepo;
-	}
+    /**
+     * Clones a remote repo into a directory and then returns a GitRepo object
+     * for the newly created local repo
+     *
+     * Accepts a creation path and a remote to clone from
+     *
+     * @access  public
+     *
+     * @param string $repoPath repository path
+     * @param string $remote remote source
+     * @param string $reference reference path
+     *
+     * @return  GitRepo
+     *
+     * @throws Exception
+     **/
+    public static function cloneRemote( string $repoPath, string $remote, $reference = null ): GitRepo
+    {
+        return GitRepo::create( $repoPath, $remote, true, $reference );
+    }
+
+    /**
+     * Checks if a variable is an instance of GitRepo
+     *
+     * Accepts a variable
+     *
+     * @access  public
+     *
+     * @param mixed $var variable
+     *
+     * @return  bool
+     */
+    public static function isRepo( $var ): bool
+    {
+        return $var instanceof GitRepo;
+    }
 
 }
