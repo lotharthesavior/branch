@@ -1,10 +1,10 @@
 <?php
 
-namespace Coyl\Git;
+namespace Git;
 
-use Coyl\Git\DTO\Branch;
-use Coyl\Git\DTO\Tag;
-use Coyl\Git\Exception\InvalidArgumentException;
+use Git\DTO\Branch;
+use Git\DTO\Tag;
+use Git\Exception\InvalidArgumentException;
 
 class RepoUtils
 {

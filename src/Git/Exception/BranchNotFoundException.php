@@ -1,8 +1,8 @@
 <?php
 
-namespace Coyl\Git\Exception;
+namespace Git\Exception;
 
-use Coyl\Git\GitException;
+use Git\GitException;
 
 class BranchNotFoundException extends GitException
 {

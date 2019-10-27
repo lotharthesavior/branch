@@ -1,6 +1,6 @@
 <?php
 
-namespace Coyl\Git\DTO;
+namespace Git\DTO;
 
 class Branch extends Reference
 {

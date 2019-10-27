@@ -1,8 +1,8 @@
 <?php
 
-namespace Coyl\Git;
+namespace Git;
 
-use Coyl\Git\Exception\BranchNotFoundException;
+use Git\Exception\BranchNotFoundException;
 use Exception;
 
 /**
@@ -37,6 +37,27 @@ class GitRepo
     protected $console;
 
     /**
+     * Constructor
+     *
+     * Accepts a repository path
+     *
+     * @access  public
+     *
+     * @param string $repo_path repository path
+     * @param bool $create_new create if not exists?
+     * @param bool $_init
+     *
+     * @throws Exception
+     */
+    public function __construct( $repo_path = null, bool $create_new = false, bool $_init = true )
+    {
+        $this->console = new Console();
+        if ( is_string( $repo_path ) ) {
+            $this->setRepoPath( $repo_path, $create_new, $_init );
+        }
+    }
+
+    /**
      * Create a new git repository
      *
      * Accepts a creation path, and, optionally, a source path
@@ -51,7 +72,7 @@ class GitRepo
      *
      * @return GitRepo
      *
-     * @throws Exception
+     * @throws GitException
      */
     public static function create( $repoPath, $source = null, $remoteSource = false, $reference = null, $commandString = "" )
     {
@@ -76,29 +97,6 @@ class GitRepo
             }
 
             return $repo;
-        }
-    }
-
-    /**
-     * Constructor
-     *
-     * Accepts a repository path
-     *
-     * @access  public
-     *
-     * @param string $repo_path repository path
-     * @param bool $create_new create if not exists?
-     * @param bool $_init
-     *
-     * @return GitRepo
-     *
-     * @throws Exception
-     */
-    public function __construct( $repo_path = null, bool $create_new = false, bool $_init = true )
-    {
-        $this->console = new Console();
-        if ( is_string( $repo_path ) ) {
-            $this->setRepoPath( $repo_path, $create_new, $_init );
         }
     }
 

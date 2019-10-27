@@ -1,6 +1,6 @@
 <?php
 
-namespace Coyl\Git\Exception;
+namespace Git\Exception;
 
 class InvalidArgumentException extends \InvalidArgumentException
 {

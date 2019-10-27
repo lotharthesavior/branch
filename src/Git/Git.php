@@ -9,7 +9,7 @@
  * @repo       http://github.com/kbjr/Git.php, https://github.com/coyl/Git.php
  */
 
-namespace Coyl\Git;
+namespace Git;
 
 use Exception;
 
@@ -17,7 +17,7 @@ use Exception;
  * Git repo factory class
  * This class enables the creating, reading, and manipulation
  * of git repositories.
- * @package Coyl\Git
+ * @package Git
  * @class  Git
  */
 class Git
@@ -74,7 +74,7 @@ class Git
      *
      * @throws Exception
      */
-    public static function create( $repoPath, $source = null )
+    public static function create( $repoPath, $source = null ): GitRepo
     {
         return GitRepo::create( $repoPath, $source );
     }

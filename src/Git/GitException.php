@@ -1,6 +1,6 @@
 <?php
 
-namespace Coyl\Git;
+namespace Git;
 
 use Exception;
 

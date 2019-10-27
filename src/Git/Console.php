@@ -1,13 +1,13 @@
 <?php
 
-namespace Coyl\Git;
+namespace Git;
 
 use Exception;
 
 /**
  * Colsole commands handler
  * @author Vasil "coylOne" Kulakov <iam@vasiliy.pro>
- * @package Coyl\Git
+ * @package Git
  */
 class Console
 {
