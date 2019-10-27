@@ -65,24 +65,28 @@ class GitRepo
      * @access public
      *
      * @param string $repoPath repository path
-     * @param string $source directory to source
+     * @param string|null $source directory to source
      * @param bool $remoteSource reference path
-     * @param string|null $reference
+     * @param string|null $reference - https://git-scm.com/docs/git-clone#Documentation/git-clone.txt---reference-if-ableltrepositorygt
      * @param string $commandString
      *
      * @return GitRepo
      *
-     * @throws GitException
+     * @throws GitException|Exception
      */
     public static function create( $repoPath, $source = null, $remoteSource = false, $reference = null, $commandString = "" )
     {
-        if ( is_dir( $repoPath ) && file_exists( $repoPath . "/.git" ) && is_dir( $repoPath . "/.git" ) ) {
+        if ( Helpers::isGitRepo($repoPath) ) {
             throw new GitException( sprintf( '"%s" is already a git repository', $repoPath ) );
         } else {
             $repo = new self( $repoPath, true, false );
             if ( is_string( $source ) ) {
                 if ( $remoteSource ) {
-                    if ( ! is_dir( $reference ) || ! is_dir( $reference . '/.git' ) ) {
+                    if (
+                        $reference === null
+                        || ! is_dir( $reference )
+                        || ! is_dir( $reference . '/.git' )
+                    ) {
                         throw new GitException( '"' . $reference . '" is not a git repository. Cannot use as reference.' );
                     } else if ( strlen( $reference ) ) {
                         $reference = realpath( $reference );
