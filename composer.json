@@ -1,0 +1,38 @@
+{
+    "name": "lotharthesavior/branch",
+    "description": "PHP library for manipulations on git repository. Based on coyl/Git.php and it's forks",
+    "license": "MIT",
+    "keywords": [
+        "git",
+        "php-git",
+        "git-client"
+    ],
+
+    "homepage": "https://github.com/lotharthesavior/branch",
+    "type": "library",
+
+    "authors": [
+        {
+            "name": "Savio Resende",
+            "email": "savio@savioresende.com.br",
+            "homepage": "http://github.com/lotharthesavior"
+        }
+    ],
+
+    "autoload": {
+        "psr-4": { "": "src/" }
+    },
+
+    "require": {
+        "php": ">=7.1"
+    },
+
+    "require-dev": {
+        "phpunit/phpunit": "~8.4.0",
+        "mockery/mockery": "^1.2"
+    },
+
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    }
+}
