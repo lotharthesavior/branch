@@ -640,7 +640,7 @@ class GitRepo implements GitRepoInterface
      */
     public function pull( Remote $remote, Branch $branch ): string
     {
-        return $this->run( "pull %s %s", [ $remote, $branch ] );
+        return $this->run( "pull %s %s", [ $remote->getName(), $branch->getName() ] );
     }
 
     /**

@@ -128,6 +128,21 @@ class GitRepoTest extends TestCase
         $this->assertTrue( $executed, 'Command Add was not executed!' );
     }
 
+    /** @test */
+    public function testCanPullFromRemoteRepo()
+    {
+        $executed = false;
+
+        $branch = new Branch('master');
+        $remote = new Remote('origin', 'https://github.com/lotharthesavior/branch.git', '(fetch)');
+        $command = sprintf( '/usr/bin/git pull %s %s', $remote->getName(), $branch->getName() );
+        $consoleMock = $this->mockConsoleForCommand( $command, $executed );
+        $gitRepo = new GitRepo( $consoleMock, '', true, true );
+        $gitRepo->pull( $remote, $branch );
+
+        $this->assertTrue( $executed, 'Command Add was not executed!' );
+    }
+
     // -------------------------
     // Private Methods
     // -------------------------

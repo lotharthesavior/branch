@@ -1,6 +1,6 @@
 ![Branch Logo](img/branch-logo.png)
 
-[![Actions Status](https://github.com/azu/github-actions-badge/workflows/ci/badge.svg)](https://github.com/lotharthesavior/branch/actions?query=workflow%3A%22PHP+Composer%22)
+[![Tests](https://github.com/lotharthesavior/branch/actions/workflows/php.yml/badge.svg)](https://github.com/lotharthesavior/branch/actions/workflows/php.yml)
 
 # Branch
 
@@ -56,6 +56,14 @@ $repo->add('.');
 $repo->commit('Some commit message');
 ```
 
+### Clone
+
+```php
+$localPath = 'local-repo';
+$repo = 'repo-url';
+$repo->clone( $repo, $localPath );
+```
+
 ### Push
 
 ```php
@@ -79,6 +87,9 @@ $repo->branchGet(); // array
 #### Get Active Branch
 
 ```php
+// Git\GitRepo;
+$repo;
+
 $repo->getActiveBranch(); // string
 ```
 
@@ -87,7 +98,33 @@ $repo->getActiveBranch(); // string
 #### Get
 
 ```php
-$repo->remote(); // array
+$repo->remote(); // \Git\DTO\Remote[]
+```
+
+#### Add
+
+```php
+$name = 'name';
+$address = 'url';
+$type = '(fetch)';
+$remote = new Remote($name, $address, $type);
+$repo->remoteAdd($remote);
+```
+
+#### Push
+
+```php
+$branch = new Branch('master');
+$remote = new Remote('name', 'url', '(push)');
+$repo->push($remote, $branch);
+```
+
+#### Pull
+
+```php
+$branch = new Branch('master');
+$remote = new Remote('name', 'url', '(fetch)');
+$repo->pull($remote, $branch);
 ```
 
 ### Description
