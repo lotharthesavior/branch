@@ -289,6 +289,22 @@ class GitRepo implements GitRepoInterface
     }
 
     /**
+     * Runs a `git clone` call to clone a remote repository
+     * into a targeted directory
+     *
+     * @param string $repository remote repository
+     * @param string $target target directory
+     *
+     * @return string
+     * @throws Exception
+     *
+     */
+    public function clone( string $repository, string $target ): string
+    {
+        return $this->run( "clone %s %s", [ $repository, $target ] );
+    }
+
+    /**
      * Runs a `git clone` call to clone the current repository
      * into a different directory
      *
@@ -298,7 +314,6 @@ class GitRepo implements GitRepoInterface
      *
      * @return string
      * @throws Exception
-     * @todo move to common purpose clone command
      *
      */
     public function cloneTo( string $target ): string
@@ -607,7 +622,7 @@ class GitRepo implements GitRepoInterface
      */
     public function push( Remote $remote, Branch $branch, bool $force = false ): string
     {
-        return $this->run( "push --tags %s %s %s", [ $force ? '--force' : '', $remote, $branch ] );
+        return $this->run( "push %s %s %s", [ $force ? '--force' : '', $remote->getName(), $branch->getName() ] );
     }
 
     /**
@@ -855,16 +870,15 @@ class GitRepo implements GitRepoInterface
     /**
      * Run `git add`
      *
-     * @param string $name
-     * @param string $address
+     * @param Remote $remote
      *
      * @return void
      *
      * @throws Exception
      */
-    public function remoteAdd( string $name, string $address ): void
+    public function remoteAdd( Remote $remote ): void
     {
-        $this->run( sprintf( 'remote add %s %s', $name, $address ) );
+        $this->run( sprintf( 'remote add %s %s %s', $remote->getName(), $remote->getUrl(), $remote->getType() ) );
     }
 
     /**

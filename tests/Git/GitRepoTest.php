@@ -1,6 +1,8 @@
 <?php
 
 use Git\Console;
+use Git\DTO\Branch;
+use Git\DTO\Remote;
 use Git\Exceptions\GitException;
 use Git\GitRepo;
 use Git\Interfaces\ConsoleInterface;
@@ -74,8 +76,54 @@ class GitRepoTest extends TestCase
         $executed = false;
 
         $consoleMock = $this->mockConsoleForCommand( '/usr/bin/git remote -v', $executed );
-        $gitRepo     = new GitRepo( $consoleMock, '', true, true );
+        $gitRepo = new GitRepo( $consoleMock, '', true, true );
         $gitRepo->remote();
+
+        $this->assertTrue( $executed, 'Command Add was not executed!' );
+    }
+
+    /** @test */
+    public function testCanAddRemoteToRepo()
+    {
+        $executed = false;
+
+        $name = 'origin';
+        $address = 'https://github.com/lotharthesavior/branch.git';
+        $remote = new Remote($name, $address, '(fetch)');
+        $command = sprintf( '/usr/bin/git remote add %s %s %s', $remote->getName(), $remote->getUrl(), $remote->getType() );
+        $consoleMock = $this->mockConsoleForCommand( $command, $executed );
+        $gitRepo = new GitRepo( $consoleMock, '', true, true );
+        $gitRepo->remoteAdd( $remote );
+
+        $this->assertTrue( $executed, 'Command Add was not executed!' );
+    }
+
+    /** @test */
+    public function testCanCloneRemoteRepo()
+    {
+        $executed = false;
+
+        $localPath = __DIR__ . DIRECTORY_SEPARATOR . 'test-local-repo';
+        $repo = 'https://github.com/lotharthesavior/branch.git';
+        $command = sprintf( '/usr/bin/git clone %s %s', $repo, $localPath );
+        $consoleMock = $this->mockConsoleForCommand( $command, $executed );
+        $gitRepo = new GitRepo( $consoleMock, '', true, true );
+        $gitRepo->clone( $repo, $localPath );
+
+        $this->assertTrue( $executed, 'Command Add was not executed!' );
+    }
+
+    /** @test */
+    public function testCanPushToRemoteRepo()
+    {
+        $executed = false;
+
+        $branch = new Branch('master');
+        $remote = new Remote('origin', 'https://github.com/lotharthesavior/branch.git', '(push)');
+        $command = sprintf( '/usr/bin/git push %s %s %s', '', $remote->getName(), $branch->getName() );
+        $consoleMock = $this->mockConsoleForCommand( $command, $executed );
+        $gitRepo = new GitRepo( $consoleMock, '', true, true );
+        $gitRepo->push( $remote, $branch );
 
         $this->assertTrue( $executed, 'Command Add was not executed!' );
     }

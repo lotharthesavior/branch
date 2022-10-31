@@ -498,14 +498,13 @@ interface GitRepoInterface
     /**
      * Run `git add`
      *
-     * @param string $name
-     * @param string $address
+     * @param Remote $remote
      *
      * @return void
      *
      * @throws Exception
      */
-    public function remoteAdd( string $name, string $address ): void;
+    public function remoteAdd( Remote $remote ): void;
 
     // gc
 
