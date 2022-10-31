@@ -150,12 +150,15 @@ class GitRepoFilesystemTest extends TestCase
         $gitRepo3 = Git::cloneFrom( $console, $repo, $repo3 );
 
         // add remote
-        $gitRepo2->remoteAdd('my-remote-name', 'my-custom-address');
+        $remote = new Remote('my-remote-name', 'my-custom-address', '(fetch)');
+        $remote2 = new Remote('my-remote-name', 'my-custom-address', '(push)');
+        $gitRepo2->remoteAdd($remote);
+        $gitRepo2->remoteAdd($remote2);
         $remotes2 = $gitRepo2->remote();
         foreach ($remotes2 as $remote) {
             $this->assertInstanceOf(Remote::class, $remote);
         }
-        $this->assertCount(4, $remotes2);
+        $this->assertCount(2, $remotes2);
 
         // count remote branches
         $remoteBranchesCount = $gitRepo3->getRemoteBranchesCount();
